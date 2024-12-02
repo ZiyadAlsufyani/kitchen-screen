@@ -1,0 +1,8 @@
+.ProductCardList {
+  width: 1000px;
+  height: auto;
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}

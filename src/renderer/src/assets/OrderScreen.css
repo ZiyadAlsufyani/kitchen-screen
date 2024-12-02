@@ -1,0 +1,61 @@
+/* General Layout */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* Order Screen Styles */
+.order-container {
+  padding: 20px;
+  text-align: center;
+}
+
+.order-container h1 {
+  color: #333;
+  font-size: 2rem;
+}
+
+.order-container h2 {
+  color: #555;
+  margin: 15px 0;
+}
+
+.order-list {
+  list-style: none;
+  padding: 0;
+}
+
+.order-list li {
+  margin: 10px 0;
+  padding: 10px;
+  background: #f4f4f4;
+  border-radius: 8px;
+  color: #333;
+  font-weight: bold;
+  transition: transform 0.2s;
+}
+
+.order-list li:hover {
+  transform: scale(1.05);
+  background-color: #e2e2e2;
+}
+
+/* Separate sections for Preparing and Ready */
+.section {
+  margin: 20px 0;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.section h2 {
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.empty-message {
+  font-size: 1.2rem;
+  color: #888;
+}
