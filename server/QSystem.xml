@@ -31,8 +31,8 @@ This code contains trade secrets of Real-Time Innovations, Inc.
     <!-- types -->
     <types>
       <struct name="ShapeType" extensibility="appendable">
-        <member name="fromDevice" type="string" stringMaxLength="128"/>
-        <member name="toDevice" type="string" stringMaxLength="128"/>
+        <member name="fromDevice" type="string" stringMaxLength="128" key="true"/>
+        <member name="toDevice" type="string" stringMaxLength="128" key="true"/>
         <member name="orderNum" type="long" key="true"/>
       </struct>
     </types>
@@ -62,7 +62,13 @@ This code contains trade secrets of Real-Time Innovations, Inc.
     <domain_participant_library name="MyParticipantLibrary">
       <domain_participant name="MyPubParticipant" domain_ref="MyDomainLibrary::MyDomain">
         <publisher name="MyPublisher">
-          <data_writer name="MySquareWriter" topic_ref="Square"/>
+          <data_writer name="MySquareWriter" topic_ref="Square">
+            <datawriter_qos>
+              <reliability>
+                <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
+              </reliability>
+            </datawriter_qos>
+          </data_writer>
         </publisher>
       </domain_participant>
       <!-- We use separate participants because we run the writer and the reader
@@ -79,7 +85,7 @@ This code contains trade secrets of Real-Time Innovations, Inc.
             </content_filter>
             <datareader_qos>
               <reliability>
-                <kind>RELIABLE_RELIABILITY_QOS</kind>
+                <kind>BEST_EFFORT_RELIABILITY_QOS</kind>
               </reliability>
             </datareader_qos>
           </data_reader>
