@@ -2,13 +2,13 @@ const express = require('express');
 const path = require('path');
 const rti = require('rticonnextdds-connector');
 const app = express();
-const configFile = path.join(__dirname, 'queue_system.xml');
+const configFile = path.join(__dirname, 'QSystem.xml');
 
 const data = []; // Moved outside the function to ensure it is accessible
 
 const run = async () => {
-  const connector = new rti.Connector('MyParticipantLibrary::QueueParticipant', configFile);
-  const input = connector.getInput('QueueMessageSubscriber::QueueMessageReader');
+  const connector = new rti.Connector('MyParticipantLibrary::MySubParticipant', configFile);
+  const input = connector.getInput('MySubscriber::MySquareReader');
   try {
     console.log('Waiting for publications...');
     await input.waitForPublications();
@@ -21,10 +21,11 @@ const run = async () => {
         const jsonData = sample.getJson();
         console.log('Received data: ' + JSON.stringify(jsonData));
         data.push({
-          fromDevice: jsonData.fromDevic,
+          fromDevice: jsonData.fromDevice,
           toDevice: jsonData.toDevice,
-          message: jsonData.message
+          orderNum: jsonData.orderNum,
         });
+        
       }
     }
   } catch (err) {
@@ -36,6 +37,7 @@ const run = async () => {
 // Define the API route outside the run function
 app.get('/api', (req, res) => {
   res.json(data);
+  data.length = 0; // Clear the data array after sending it
 });
 
 app.listen(5001, async () => {

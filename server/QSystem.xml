@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+(c) 2005-2015 Copyright, Real-Time Innovations.  All rights reserved.
+No duplications, whole or partial, manual or electronic, may be made
+without express written permission.  Any such copies, or revisions thereof,
+must display this notice unaltered.
+This code contains trade secrets of Real-Time Innovations, Inc.
+ -->
+<!--
+(c) 2005-2015 Copyright, Real-Time Innovations.  All rights reserved.
+No duplications, whole or partial, manual or electronic, may be made
+without express written permission.  Any such copies, or revisions thereof,
+must display this notice unaltered.
+This code contains trade secrets of Real-Time Innovations, Inc.
+ -->
+<!--
+(c) 2005-2015 Copyright, Real-Time Innovations.  All rights reserved.
+No duplications, whole or partial, manual or electronic, may be made
+without express written permission.  Any such copies, or revisions thereof,
+must display this notice unaltered.
+This code contains trade secrets of Real-Time Innovations, Inc.
+ -->
+<!--
+(c) 2005-2015 Copyright, Real-Time Innovations.  All rights reserved.
+No duplications, whole or partial, manual or electronic, may be made
+without express written permission.  Any such copies, or revisions thereof,
+must display this notice unaltered.
+This code contains trade secrets of Real-Time Innovations, Inc.
+ -->
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/7.3.0/rti_routing_service.xsd" version="7.3.0">
+    <!-- types -->
+    <types>
+      <struct name="ShapeType" extensibility="appendable">
+        <member name="fromDevice" type="string" stringMaxLength="128"/>
+        <member name="toDevice" type="string" stringMaxLength="128"/>
+        <member name="orderNum" type="long" key="true"/>
+      </struct>
+    </types>
+
+    <!-- Qos Library -->
+    <qos_library name="QosLibrary">
+      <qos_profile name="DefaultProfile" base_name="BuiltinQosLibExp::Generic.StrictReliable" is_default_qos="true">
+        <domain_participant_qos>
+          <participant_name>
+            <name>Connector Shape Example</name>
+          </participant_name>
+        </domain_participant_qos>
+      </qos_profile>
+    </qos_library>
+
+    <!-- Domain Library -->
+    <domain_library name="MyDomainLibrary">
+      <domain name="MyDomain" domain_id="0">
+        <register_type name="ShapeType" type_ref="ShapeType"/>
+        <topic name="Square" register_type_ref="ShapeType"/>
+        <topic name="Circle" register_type_ref="ShapeType"/>
+        <topic name="Triangle" register_type_ref="ShapeType"/>
+      </domain>
+    </domain_library>
+
+    <!-- Participant library -->
+    <domain_participant_library name="MyParticipantLibrary">
+      <domain_participant name="MyPubParticipant" domain_ref="MyDomainLibrary::MyDomain">
+        <publisher name="MyPublisher">
+          <data_writer name="MySquareWriter" topic_ref="Square"/>
+        </publisher>
+      </domain_participant>
+      <!-- We use separate participants because we run the writer and the reader
+            on different applications, and wouldn't want to create the reader
+            in writer.py, or the writer in reader.py -->
+      <domain_participant name="MySubParticipant" domain_ref="MyDomainLibrary::MyDomain">
+        <subscriber name="MySubscriber">
+          <data_reader name="MySquareReader" topic_ref="Square">
+            <content_filter name="MyFilter" kind="builtin.sql">
+              <expression>toDevice MATCH %0</expression>
+              <expression_parameters>
+                <element>&apos;$(toDevice)&apos;</element>
+              </expression_parameters>
+            </content_filter>
+            <datareader_qos>
+              <reliability>
+                <kind>RELIABLE_RELIABILITY_QOS</kind>
+              </reliability>
+            </datareader_qos>
+          </data_reader>
+        </subscriber>
+      </domain_participant>
+    </domain_participant_library>
+
+</dds>

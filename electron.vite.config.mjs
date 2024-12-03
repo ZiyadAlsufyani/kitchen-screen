@@ -16,6 +16,6 @@ export default defineConfig({
       }
     },
     plugins: [react()],
-    server: { proxy: { '/endPointName': 'http://localhost:portNumber' } }
+    server: { proxy: { '/api': 'http://localhost:5001' } }
   }
 })

@@ -1,41 +1,57 @@
 import OrderCard from './OrderCard'
 import '../assets/OrderList.css'
 import { v4 as uuid } from 'uuid'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function OrderList({ btnmessage, btnColor = 'primary' }) {
-  // Initialize state with 9 OrderCard objects, each with a unique ID
-  const initialBoxes = Array.from({ length: 12 }, () => ({ id: uuid(), btnColor }))
-  const [boxes, setBoxes] = useState(initialBoxes)
+  const [boxes, setBoxes] = useState([])
 
-  function addOrderCard() {
-    const newBox = { id: uuid(), btnColor }
-    setBoxes([...boxes, newBox])
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await fetch('/api')
+        const orders = await response.json()
+        
+        // Only process orders if array is not empty
+        if (orders && orders.length > 0) {
+          orders.forEach(order => {
+            addOrderCard(order.orderNum)
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching orders:', error)
+      }
+    }
+
+    const interval = setInterval(fetchOrders, 2000)
+    return () => clearInterval(interval)
+  }, [])
+
+  function addOrderCard(orderNum) {
+    const newBox = { 
+      id: uuid(), 
+      btnColor,
+      orderNum 
+    }
+    setBoxes(prevBoxes => [...prevBoxes, newBox])
   }
 
   function removeOrderCard(id) {
     setBoxes(boxes.filter((box) => box.id !== id))
   }
 
-  function getRandomOrderNum() {
-    return Math.floor(Math.random() * (1000 - 100 + 1)) + 100;
-  }
-
   return (
-    <>
-      {/* <button onClick={addOrderCard}>Add OrderCard</button> */}
-      <div className="OrderList">
-        {boxes.map((box, i) => (
-          <OrderCard
-            orderNum={getRandomOrderNum()}
-            btnmessage={btnmessage}
-            key={box.id}
-            id={box.id}
-            btnColor={box.btnColor}
-            removeOrderCard={removeOrderCard}
-          />
-        ))}
-      </div>
-    </>
+    <div className="OrderList">
+      {boxes.map((box) => (
+        <OrderCard
+          orderNum={box.orderNum}
+          btnmessage={btnmessage}
+          key={box.id}
+          id={box.id}
+          btnColor={box.btnColor}
+          removeOrderCard={removeOrderCard}
+        />
+      ))}
+    </div>
   )
 }
