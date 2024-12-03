@@ -2,7 +2,10 @@ const express = require('express');
 const path = require('path');
 const rti = require('rticonnextdds-connector');
 const app = express();
+const bodyParser = require('body-parser');
 const configFile = path.join(__dirname, 'QSystem.xml');
+
+app.use(bodyParser.json());
 
 const data = []; // Moved outside the function to ensure it is accessible
 
@@ -38,6 +41,37 @@ const run = async () => {
 app.get('/api', (req, res) => {
   res.json(data);
   data.length = 0; // Clear the data array after sending it
+});
+
+app.post('/write', async (req, res) => {
+  const { fromDevice, toDevice, orderNum } = req.body;
+  console.log(req.body);
+
+  const connector = new rti.Connector('MyParticipantLibrary::MyPubParticipant', configFile);
+  const output = connector.getOutput('MyPublisher::MySquareWriter');
+
+  try {
+    console.log('Waiting for subscriptions...');
+    const waitTime = 5000; // Timeout in milliseconds
+    const hasSubscriptions = await output.waitForSubscriptions(waitTime);
+
+    if (!hasSubscriptions) {
+      throw new Error('No subscriptions found');
+    }
+
+    console.log('Writing...');
+    output.instance.setString('fromDevice', fromDevice);
+    output.instance.setString('toDevice', toDevice);
+    output.instance.setNumber('orderNum', orderNum);
+    output.write();
+
+    res.status(200).send('Data written successfully');
+  } catch (err) {
+    console.error('Error encountered:', err);
+    res.status(500).send('Failed to write data: ' + err.message);
+  } finally {
+    connector.close();
+  }
 });
 
 app.listen(5001, async () => {

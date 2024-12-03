@@ -1,16 +1,24 @@
-import Button from '@mui/joy/Button'
-import Card from '@mui/joy/Card'
-import CardContent from '@mui/joy/CardContent'
-import CardOverflow from '@mui/joy/CardOverflow'
-import Typography from '@mui/joy/Typography'
+import Button from '@mui/joy/Button';
+import Card from '@mui/joy/Card';
+import CardContent from '@mui/joy/CardContent';
+import CardOverflow from '@mui/joy/CardOverflow';
+import Typography from '@mui/joy/Typography';
 
 export default function OrderCard({
   btnmessage = 'Terminate',
   id,
   btnColor,
   removeOrderCard,
-  orderNum = 2830
+  orderNum = 2830,
+  onOrderCardClick
 }) {
+  const handleClick = async () => {
+    if (onOrderCardClick) {
+      await onOrderCardClick(orderNum); // Use the orderNum passed from OrderList
+    }
+    removeOrderCard(id);
+  };
+
   return (
     <Card sx={{ width: 0.2, maxWidth: '100%', boxShadow: 'lg', margin: 1 }}>
       <CardContent>
@@ -20,10 +28,10 @@ export default function OrderCard({
         </Typography>
       </CardContent>
       <CardOverflow>
-        <Button variant="solid" color={btnColor} size="lg" onClick={() => removeOrderCard(id)}>
+        <Button variant="solid" color={btnColor} size="lg" onClick={handleClick}>
           {btnmessage}
         </Button>
       </CardOverflow>
     </Card>
-  )
+  );
 }
