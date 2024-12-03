@@ -9,7 +9,7 @@ export default function OrderCard({
   id,
   btnColor,
   removeOrderCard,
-  orderNum = 2830,
+  orderNum,
   onOrderCardClick
 }) {
   const handleClick = async () => {
