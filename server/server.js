@@ -10,14 +10,14 @@ app.use(bodyParser.json());
 const data = []; // Moved outside the function to ensure it is accessible
 
 const run = async () => {
-  const connector = new rti.Connector('MyParticipantLibrary::MySubParticipant', configFile);
+  const connector = new rti.Connector('KitchenScreenDomainParticipantLibrary::MySubParticipant', configFile);
   const input = connector.getInput('MySubscriber::MySquareReader');
   try {
     console.log('Waiting for publications...');
     await input.waitForPublications();
 
     console.log('Waiting for data...');
-    for (let i = 0; i < 500; i++) {
+    while (true) { // This will run indefinitely
       await input.wait();
       input.take();
       for (const sample of input.samples.validDataIter) {
@@ -28,13 +28,13 @@ const run = async () => {
           toDevice: jsonData.toDevice,
           orderNum: jsonData.orderNum,
         });
-        
       }
     }
   } catch (err) {
     console.log('Error encountered: ' + err);
+  } finally {
+    connector.close();
   }
-  connector.close();
 };
 
 // Define the API route outside the run function
@@ -47,7 +47,7 @@ app.post('/write', async (req, res) => {
   const { fromDevice, toDevice, orderNum } = req.body;
   console.log(req.body);
 
-  const connector = new rti.Connector('MyParticipantLibrary::MyPubParticipant', configFile);
+  const connector = new rti.Connector('KitchenScreenDomainParticipantLibrary::MyPubParticipant', configFile);
   const output = connector.getOutput('MyPublisher::MySquareWriter');
 
   try {
