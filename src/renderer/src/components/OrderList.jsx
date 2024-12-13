@@ -4,7 +4,16 @@ import { v4 as uuid } from 'uuid';
 import { useState, useEffect } from 'react';
 
 export default function OrderList({ btnmessage, btnColor = 'primary' }) {
-  const [boxes, setBoxes] = useState([]);
+  // Initialize state from localStorage or empty array
+  const [boxes, setBoxes] = useState(() => {
+    const savedBoxes = localStorage.getItem('orderBoxes');
+    return savedBoxes ? JSON.parse(savedBoxes) : [];
+  });
+
+  // Save to localStorage whenever boxes changes
+  useEffect(() => {
+    localStorage.setItem('orderBoxes', JSON.stringify(boxes));
+  }, [boxes]);
 
   useEffect(() => {
     const fetchOrders = async () => {

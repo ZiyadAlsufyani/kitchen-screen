@@ -7,7 +7,7 @@ const configFile = path.join(__dirname, 'QSystem.xml');
 
 app.use(bodyParser.json());
 
-const data = []; // Moved outside the function to ensure it is accessible
+let data = [];
 
 const run = async () => {
   const connector = new rti.Connector('KitchenScreenDomainParticipantLibrary::MySubParticipant', configFile);
@@ -37,7 +37,6 @@ const run = async () => {
   }
 };
 
-// Define the API route outside the run function
 app.get('/api', (req, res) => {
   res.json(data);
   data.length = 0; // Clear the data array after sending it
