@@ -79,12 +79,12 @@ app.listen(5001, async () => {
 
 process.on('SIGINT', () => {
   console.log('SIGINT signal received: closing connector');
-  connector.close();
+  connector2.close();
   process.exit(0);
 });
 
 process.on('SIGTERM', () => {
   console.log('SIGTERM signal received: closing connector');
-  connector.close();
+  connector2.close();
   process.exit(0);
 });
