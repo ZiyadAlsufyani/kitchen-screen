@@ -8,12 +8,12 @@ const configFile = path.join(__dirname, 'QSystem.xml');
 app.use(bodyParser.json());
 
 let data = [];
-const connector2 = new rti.Connector('KitchenScreenDomainParticipantLibrary::MyPubParticipant', configFile);
-const output2 = connector2.getOutput('MyPublisher::MySquareWriter');
+const connector2 = new rti.Connector('KitchenScreenDomainParticipantLibrary::KitchenScreenPubParticipant', configFile);
+const output2 = connector2.getOutput('KitchenScreenPublisher::KitchenScreenWriter');
 
 const run = async () => {
-  const connector = new rti.Connector('KitchenScreenDomainParticipantLibrary::MySubParticipant', configFile);
-  const input = connector.getInput('MySubscriber::MySquareReader');
+  const connector = new rti.Connector('KitchenScreenDomainParticipantLibrary::KitchenScreenSubParticipant', configFile);
+  const input = connector.getInput('KitchenScreenSubscriber::KitchenScreenReader');
   try {
     console.log('Waiting for publications...');
     await input.waitForPublications();
@@ -48,21 +48,12 @@ app.post('/write', async (req, res) => {
   const { fromDevice, toDevice, orderNum } = req.body;
   console.log(req.body);
 
-
-
   try {
-    // console.log('Waiting for subscriptions...');
-    // const waitTime = 5000; // Timeout in milliseconds
-    // const hasSubscriptions = await output.waitForSubscriptions(waitTime);
-
-    // if (!hasSubscriptions) {
-    //   throw new Error('No subscriptions found');
-    // }
-
     console.log('Writing...');
     output2.instance.setString('fromDevice', fromDevice);
     output2.instance.setString('toDevice', toDevice);
     output2.instance.setNumber('orderNum', orderNum);
+    output2.instance.setString('orderDetails', null);
     output2.write();
 
     res.status(200).send('Data written successfully');

@@ -1,39 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-(c) 2005-2015 Copyright, Real-Time Innovations.  All rights reserved.
-No duplications, whole or partial, manual or electronic, may be made
-without express written permission.  Any such copies, or revisions thereof,
-must display this notice unaltered.
-This code contains trade secrets of Real-Time Innovations, Inc.
- -->
-<!--
-(c) 2005-2015 Copyright, Real-Time Innovations.  All rights reserved.
-No duplications, whole or partial, manual or electronic, may be made
-without express written permission.  Any such copies, or revisions thereof,
-must display this notice unaltered.
-This code contains trade secrets of Real-Time Innovations, Inc.
- -->
-<!--
-(c) 2005-2015 Copyright, Real-Time Innovations.  All rights reserved.
-No duplications, whole or partial, manual or electronic, may be made
-without express written permission.  Any such copies, or revisions thereof,
-must display this notice unaltered.
-This code contains trade secrets of Real-Time Innovations, Inc.
- -->
-<!--
-(c) 2005-2015 Copyright, Real-Time Innovations.  All rights reserved.
-No duplications, whole or partial, manual or electronic, may be made
-without express written permission.  Any such copies, or revisions thereof,
-must display this notice unaltered.
-This code contains trade secrets of Real-Time Innovations, Inc.
- -->
 <dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/7.3.0/rti_routing_service.xsd" version="7.3.0">
     <!-- types -->
     <types>
-      <struct name="ShapeType" extensibility="appendable">
+      <struct name="Order" extensibility="appendable">
         <member name="fromDevice" type="string" stringMaxLength="128"/>
         <member name="toDevice" type="string" stringMaxLength="128"/>
         <member name="orderNum" type="long" key="true"/>
+        <member name="orderDetails" type="string" stringMaxLength="1024" optional="true"/>
       </struct>
     </types>
 
@@ -42,7 +15,7 @@ This code contains trade secrets of Real-Time Innovations, Inc.
       <qos_profile name="DefaultProfile" base_name="BuiltinQosLibExp::Generic.StrictReliable" is_default_qos="true">
         <domain_participant_qos>
           <participant_name>
-            <name>Connector Shape Example</name>
+            <name>Connector Order</name>
           </participant_name>
         </domain_participant_qos>
       </qos_profile>
@@ -50,44 +23,21 @@ This code contains trade secrets of Real-Time Innovations, Inc.
 
     <!-- Domain Library -->
     <domain_library name="MyDomainLibrary">
-      <domain name="MyDomain" domain_id="10">
-        <register_type name="ShapeType" type_ref="ShapeType"/>
-        <topic name="Square" register_type_ref="ShapeType"/>
+      <domain name="MyDomain" domain_id="15">
+        <register_type name="OrderType" type_ref="Order"/>
+        <topic name="Order" register_type_ref="OrderType"/>
       </domain>
     </domain_library>
 
-    <!-- Participant library -->
-    <domain_participant_library name="MyParticipantLibrary">
-      <domain_participant name="MyPubParticipant" domain_ref="MyDomainLibrary::MyDomain">
-        <publisher name="MyPublisher">
-          <data_writer name="MySquareWriter" topic_ref="Square"/>
-        </publisher>
-      </domain_participant>
-      <!-- We use separate participants because we run the writer and the reader
-            on different applications, and wouldn't want to create the reader
-            in writer.py, or the writer in reader.py -->
-      <domain_participant name="MySubParticipant" domain_ref="MyDomainLibrary::MyDomain">
-        <subscriber name="MySubscriber">
-          <data_reader name="MySquareReader" topic_ref="Square">
-            <content_filter name="MyFilter" kind="builtin.sql">
-              <expression>(toDevice MATCH %0)</expression>
-              <expression_parameters>
-                <element>&apos;$(toDevice)&apos;</element>
-              </expression_parameters>
-            </content_filter>
-          </data_reader>
-        </subscriber>
-      </domain_participant>
-    </domain_participant_library>
     <domain_participant_library name="HomeScreenDomainParticipantLibrary">
-      <domain_participant name="MyPubParticipant" domain_ref="MyDomainLibrary::MyDomain">
-        <publisher name="MyPublisher">
-          <data_writer name="MySquareWriter" topic_ref="Square"/>
+      <domain_participant name="HomeScreenPubParticipant" domain_ref="MyDomainLibrary::MyDomain">
+        <publisher name="HomeScreenPublisher">
+          <data_writer name="HomeScreenWriter" topic_ref="Order"/>
         </publisher>
       </domain_participant>
-      <domain_participant name="MySubParticipant" domain_ref="MyDomainLibrary::MyDomain">
-        <subscriber name="MySubscriber">
-          <data_reader name="MySquareReader" topic_ref="Square">
+      <domain_participant name="HomeScreenSubParticipant" domain_ref="MyDomainLibrary::MyDomain">
+        <subscriber name="HomeScreenSubscriber">
+          <data_reader name="HomeScreenReader" topic_ref="Order">
             <content_filter name="MyFilter" kind="builtin.sql">
               <expression>(toDevice MATCH %0)</expression>
               <expression_parameters>
@@ -99,14 +49,14 @@ This code contains trade secrets of Real-Time Innovations, Inc.
       </domain_participant>
     </domain_participant_library>
     <domain_participant_library name="KitchenScreenDomainParticipantLibrary">
-      <domain_participant name="MyPubParticipant" domain_ref="MyDomainLibrary::MyDomain">
-        <publisher name="MyPublisher">
-          <data_writer name="MySquareWriter" topic_ref="Square"/>
+      <domain_participant name="KitchenScreenPubParticipant" domain_ref="MyDomainLibrary::MyDomain">
+        <publisher name="KitchenScreenPublisher">
+          <data_writer name="KitchenScreenWriter" topic_ref="Order"/>
         </publisher>
       </domain_participant>
-      <domain_participant name="MySubParticipant" domain_ref="MyDomainLibrary::MyDomain">
-        <subscriber name="MySubscriber">
-          <data_reader name="MySquareReader" topic_ref="Square">
+      <domain_participant name="KitchenScreenSubParticipant" domain_ref="MyDomainLibrary::MyDomain">
+        <subscriber name="KitchenScreenSubscriber">
+          <data_reader name="KitchenScreenReader" topic_ref="Order">
             <content_filter name="MyFilter" kind="builtin.sql">
               <expression>(toDevice MATCH %0)</expression>
               <expression_parameters>
@@ -118,14 +68,14 @@ This code contains trade secrets of Real-Time Innovations, Inc.
       </domain_participant>
     </domain_participant_library>
     <domain_participant_library name="OrderCompletionScreenDomainParticipantLibrary">
-      <domain_participant name="MyPubParticipant" domain_ref="MyDomainLibrary::MyDomain">
-        <publisher name="MyPublisher">
-          <data_writer name="MySquareWriter" topic_ref="Square"/>
+      <domain_participant name="OrderCompletionScreenPubParticipant" domain_ref="MyDomainLibrary::MyDomain">
+        <publisher name="OrderCompletionScreenPublisher">
+          <data_writer name="OrderCompletionScreenWriter" topic_ref="Order"/>
         </publisher>
       </domain_participant>
-      <domain_participant name="MySubParticipant" domain_ref="MyDomainLibrary::MyDomain">
-        <subscriber name="MySubscriber">
-          <data_reader name="MySquareReader" topic_ref="Square">
+      <domain_participant name="OrderCompletionScreenSubParticipant" domain_ref="MyDomainLibrary::MyDomain">
+        <subscriber name="OrderCompletionScreenSubscriber">
+          <data_reader name="OrderCompletionScreenReader" topic_ref="Order">
             <content_filter name="MyFilter" kind="builtin.sql">
               <expression>(toDevice MATCH %0)</expression>
               <expression_parameters>
@@ -137,14 +87,14 @@ This code contains trade secrets of Real-Time Innovations, Inc.
       </domain_participant>
     </domain_participant_library>
     <domain_participant_library name="OrderScreenDomainParticipantLibrary">
-      <domain_participant name="MyPubParticipant" domain_ref="MyDomainLibrary::MyDomain">
-        <publisher name="MyPublisher">
-          <data_writer name="MySquareWriter" topic_ref="Square"/>
+      <domain_participant name="OrderScreenPubParticipant" domain_ref="MyDomainLibrary::MyDomain">
+        <publisher name="OrderScreenPublisher">
+          <data_writer name="OrderScreenWriter" topic_ref="Order"/>
         </publisher>
       </domain_participant>
-      <domain_participant name="MySubParticipant" domain_ref="MyDomainLibrary::MyDomain">
-        <subscriber name="MySubscriber">
-          <data_reader name="MySquareReader" topic_ref="Square">
+      <domain_participant name="OrderScreenSubParticipant" domain_ref="MyDomainLibrary::MyDomain">
+        <subscriber name="OrderScreenSubscriber">
+          <data_reader name="OrderScreenReader" topic_ref="Order">
             <content_filter name="MyFilter" kind="builtin.sql">
               <expression>(toDevice MATCH %0)</expression>
               <expression_parameters>

@@ -32,7 +32,7 @@ export default function OrderList({ btnmessage, btnColor = 'primary' }) {
       }
     };
 
-    const interval = setInterval(fetchOrders, 2000);
+    const interval = setInterval(fetchOrders, 1000);
     return () => clearInterval(interval);
   }, []);
 
