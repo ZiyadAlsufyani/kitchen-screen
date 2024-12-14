@@ -24,7 +24,7 @@ export default function OrderList({ btnmessage, btnColor = 'primary' }) {
         // Only process orders if array is not empty
         if (orders && orders.length > 0) {
           orders.forEach(order => {
-            addOrderCard(order.orderNum);
+            addOrderCard(order);
           });
         }
       } catch (error) {
@@ -36,11 +36,12 @@ export default function OrderList({ btnmessage, btnColor = 'primary' }) {
     return () => clearInterval(interval);
   }, []);
 
-  function addOrderCard(orderNum) {
+  function addOrderCard(order) {
     const newBox = { 
       id: uuid(), 
       btnColor,
-      orderNum 
+      orderNum: order.orderNum,
+      orderDetails: order.orderDetails 
     };
     setBoxes(prevBoxes => [...prevBoxes, newBox]);
   }
@@ -76,6 +77,7 @@ export default function OrderList({ btnmessage, btnColor = 'primary' }) {
       {boxes.map((box) => (
         <OrderCard
           orderNum={box.orderNum}
+          orderDetails={box.orderDetails}
           btnmessage={btnmessage}
           key={box.id}
           id={box.id}

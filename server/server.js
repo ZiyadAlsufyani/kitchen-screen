@@ -29,6 +29,7 @@ const run = async () => {
           fromDevice: jsonData.fromDevice,
           toDevice: jsonData.toDevice,
           orderNum: jsonData.orderNum,
+          orderDetails: jsonData.orderDetails,
         });
       }
     }

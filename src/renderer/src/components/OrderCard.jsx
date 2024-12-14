@@ -10,6 +10,7 @@ export default function OrderCard({
   btnColor,
   removeOrderCard,
   orderNum,
+  orderDetails,
   onOrderCardClick
 }) {
   const handleClick = async () => {
@@ -26,6 +27,11 @@ export default function OrderCard({
           {' '}
           Order: {orderNum}{' '}
         </Typography>
+        {orderDetails?.split('\n').map((line, index) => (
+          <Typography key={index} level="body">
+            {line}
+          </Typography>
+        ))}
       </CardContent>
       <CardOverflow>
         <Button variant="solid" color={btnColor} size="lg" onClick={handleClick}>
