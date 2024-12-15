@@ -15,7 +15,10 @@
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
     "build:mac": "npm run build && electron-builder --mac",
-    "build:linux": "npm run build && electron-builder --linux"
+    "build:linux": "npm run build && electron-builder --linux",
+    "start:server": "cd server && cross-env toDevice=kitchen node server.js",
+    "start:app": "npm run dev",
+    "start:all": "concurrently \"npm run start:server\" \"npm run start:app\""
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
@@ -32,6 +35,8 @@
     "@electron-toolkit/eslint-config": "^1.0.2",
     "@electron-toolkit/eslint-config-prettier": "^2.0.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "concurrently": "^9.1.0",
+    "cross-env": "^7.0.3",
     "electron": "^31.0.2",
     "electron-builder": "^24.13.3",
     "electron-vite": "^2.3.0",
